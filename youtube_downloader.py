@@ -10,6 +10,8 @@ import glob
 # from track_gui import Mp3InfoWindow
 from Mp3Data import Mp3Data
 
+# Run this comand to upgrade youtube-dl
+# sudo -H pip install --upgrade youtube-dl
 
 def getNameAndArtist(info, mp3_data):
     try:
@@ -56,7 +58,7 @@ def addid3Tag(mp3_data):
     audiofile.tag.title = mp3_data.track
     audiofile.tag.artist = mp3_data.artist
     audiofile.tag.save()
-    print(audiofile.tag.genre)
+    print(audiofile.tag.artist + " " + audiofile.tag.title)
 
 
 def downloadPlaylist(youtube_url):
@@ -70,10 +72,14 @@ def downloadPlaylist(youtube_url):
     }
     with youtube_dl.YoutubeDL(ydl_opts) as ydl:
         info = ydl.extract_info(youtube_url, download=False)
-    for entries in info['entries']:
+    try:
+        track_info = info['entries']
+    except:
+        print("Your link is not a youtube playlist!")
+        return
+    for entries in track_info:
         data = Mp3Data(entries[u'webpage_url'])
         getNameAndArtist(entries, data)
-        description = entries[u'description']
         downloadVideo(data.id)
         filename = createFileName(data.track, data.artist)
         path = findPath(entries)
@@ -94,7 +100,8 @@ def downloadPlaylist(youtube_url):
 
 
 
-downloadPlaylist("https://www.youtube.com/playlist?list=PL80f_f6Nuu4bdwS1DWOgS0i5hRGja3IYT")
+# downloadPlaylist("https://youtu.be/3mvwPCojVLg")
+downloadPlaylist("https://www.youtube.com/playlist?list=PL80f_f6Nuu4ZLnh8RI45TrXne4giazCtX")
 
 
 
