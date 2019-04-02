@@ -2,43 +2,66 @@ import sys
 import spotipy
 import spotipy.util as util
 
-
-def searchFor(token, name, artist):
-    sp = spotipy.Spotify(auth=token)
+def findArtist(sp, artist):
     results = sp.search(q=artist, type='artist')
     artist_items = results[u'artists'][u'items']
-    art_id = ""
     for artist_item in artist_items:
         if artist_item[u'name'] == artist:
-            art_id = artist_item[u'id']
+            return artist_item[u'id']
 
-    if art_id == "":
-        print("Could not find artist. Which is it?")
-        print("0. None")
-        count = 0
-        for artist_item in artist_items:
-            count += 1
-            statement = str(count) + ". " + artist_item[u'name']
-            print(statement)
-        answer = raw_input("Type the number: ")
-        type(answer)
-        print("You typed " + answer)
-        if answer == 0:
-            return
-        else:
-            art_id = artist_items[int(answer)-1][u'id']
-    final_track = ""
-    albums = sp.artist_albums(art_id)
-    for alb in albums[u'items']:
-        if final_track != "":
-            break
+    print("Could not find artist. Which is it?")
+    print("0. None")
+    count = 0
+    for artist_item in artist_items:
+        count += 1
+        statement = str(count) + ". " + artist_item[u'name']
+        print(statement)
+    answer = raw_input("Type the number: ")
+    type(answer)
+    print("You typed " + answer)
+    if answer == 0:
+        return 0
+    else:
+        return artist_items[int(answer)-1][u'id']
+
+def findTrack(sp, artist_id, name):
+    final_tracks = []
+    index = 0
+    last_response = sp.artist_albums(artist_id, limit=50, offset=index)
+    albums = last_response[u'items']
+    while len(last_response[u'items']) == 50:
+        index += 50
+        last_response = sp.artist_albums(artist_id, limit=50, offset=index)
+        albums = albums + last_response[u'items']
+        print("Boom")
+    print("Number of Albums: " + str(len(albums)))
+
+    for alb in albums:
         tracks = sp.album_tracks(alb[u'id'])
         for track in tracks[u'items']:
-            print(track[u'name'])
             n = track[u'name'].upper().lower()
-            if n == name.upper().lower():
-                final_track = track
-                break
+            if n == name:
+                track[u"album"] = alb[u'name']
+                final_tracks.append(track)
+    if len(final_tracks) == 0:
+        return ""
+    if len(final_tracks) == 1:
+        return final_tracks[0]
+    print("Found mutiple albums with the song. Which do you want?")
+    index = 0
+    for t in final_tracks:
+        index += 1
+        print(str(index) + ". " + t[u"album"])
+
+
+
+def searchFor(token, name, artist):
+    name = name.upper().lower()
+    artist = artist.upper().lower()
+    sp = spotipy.Spotify(auth=token)
+    artist_id = findArtist(sp, artist)
+    final_track = findTrack(sp, artist_id, name)
+    
     print(final_track)
 
 
