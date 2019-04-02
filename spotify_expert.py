@@ -7,18 +7,40 @@ def searchFor(token, name, artist):
     sp = spotipy.Spotify(auth=token)
     results = sp.search(q=artist, type='artist')
     artist_items = results[u'artists'][u'items']
-    print(artist_items)
-    # albums = sp.artist_albums(artist_id)
-    # print(results)
-    mytrack = "";
-    # for track in results[u'tracks'][u'items']:
-    #     if(mytrack != ""):
-    #         break
-    #     for artist_item in track[u'artists']:
-    #         print(artist_item[u'name'])
-    #         if(artist_item[u'name'] == artist):
-    #             mytrack = track
-    #             break
+    art_id = ""
+    for artist_item in artist_items:
+        if artist_item[u'name'] == artist:
+            art_id = artist_item[u'id']
+
+    if art_id == "":
+        print("Could not find artist. Which is it?")
+        print("0. None")
+        count = 0
+        for artist_item in artist_items:
+            count += 1
+            statement = str(count) + ". " + artist_item[u'name']
+            print(statement)
+        answer = raw_input("Type the number: ")
+        type(answer)
+        print("You typed " + answer)
+        if answer == 0:
+            return
+        else:
+            art_id = artist_items[int(answer)-1][u'id']
+    final_track = ""
+    albums = sp.artist_albums(art_id)
+    for alb in albums[u'items']:
+        if final_track != "":
+            break
+        tracks = sp.album_tracks(alb[u'id'])
+        for track in tracks[u'items']:
+            print(track[u'name'])
+            n = track[u'name'].upper().lower()
+            if n == name.upper().lower():
+                final_track = track
+                break
+    print(final_track)
+
 
 
 
