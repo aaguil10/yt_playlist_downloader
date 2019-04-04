@@ -11,8 +11,10 @@ def findArtist(sp, artist):
     index = 0
     results = sp.search(q=artist, limit=PAGINATION_LIMIT, offset=index, type='artist')
     artist_items = results[u'artists'][u'items']
+    print("--------artist_item--------")
     for artist_item in artist_items:
         if artist_item[u'name'] == artist:
+            print(artist_item)
             return artist_item[u'id']
     while len(results[u'artists'][u'items']) > 0:
         index += PAGINATION_LIMIT
@@ -20,9 +22,10 @@ def findArtist(sp, artist):
         artist_items = artist_items + results[u'artists'][u'items']
         for artist_item in results[u'artists'][u'items']:
             if artist_item[u'name'] == artist:
+                print(artist_item)
                 return artist_item[u'id'] 
 
-    print("Could not find artist. Which is it?")
+    print("Could not find artist: \"" + artist + "\". Which is it?")
     print("0. None")
     count = 0
     for artist_item in artist_items:
@@ -34,6 +37,7 @@ def findArtist(sp, artist):
     if answer == 0:
         return 0
     else:
+        print(artist_items[int(answer)-1])
         return artist_items[int(answer)-1][u'id']
 
 def getTrackFromAlbums(sp, artist_id, index, final_tracks, name):
@@ -45,7 +49,10 @@ def getTrackFromAlbums(sp, artist_id, index, final_tracks, name):
             n = track[u'name'].upper().lower()
             if n == name:
                 track[u"album"] = alb[u'name']
+                track[u'release_date'] = alb[u'release_date']
                 track[u"album_img_url"] =  alb[u'images'][0][u'url']
+                print("--------alb--------")
+                print(alb)
                 final_tracks.append(track)
                 break;
     return len(albums)
@@ -96,11 +103,13 @@ def addAlbumArt(audiofile, albumart_url):
         print('Unable to add album art for ' + albumart_url)
 
 def addid3Tag(audiofile, track_data):
+    print("--------track_data--------")
     print track_data
     audiofile.tag.title = track_data[u'name']
     audiofile.tag.artist = track_data[u'artists'][0][u'name']
     audiofile.tag.album = track_data[u'album']
     addAlbumArt(audiofile, track_data[u'album_img_url'])
+    audiofile.tag.release_date = track_data[u'release_date']
     audiofile.tag.save()
 
 
@@ -108,6 +117,7 @@ def show_info(audiofile):
     print audiofile.tag.artist
     print audiofile.tag.album
     print audiofile.tag.title
+    print audiofile.tag.release_date
 
 
 def add_missing_mp3_data(mp3_filepath):
@@ -133,7 +143,7 @@ def add_missing_mp3_data(mp3_filepath):
 
 
 
-add_missing_mp3_data("downloaded_tracks/Wisin_&_Yandel_Callao.mp3")
+add_missing_mp3_data("downloaded_tracks/Minno_Ode_to_Nothing.mp3")
 
 
 
