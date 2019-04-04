@@ -2,6 +2,8 @@ import sys
 import spotipy
 import spotipy.util as util
 import eyed3
+import urllib2
+import os
 
 PAGINATION_LIMIT = 50
 
@@ -43,6 +45,7 @@ def getTrackFromAlbums(sp, artist_id, index, final_tracks, name):
             n = track[u'name'].upper().lower()
             if n == name:
                 track[u"album"] = alb[u'name']
+                track[u"album_img_url"] =  alb[u'images'][0][u'url']
                 final_tracks.append(track)
                 break;
     return len(albums)
@@ -78,10 +81,26 @@ def searchFor(token, name, artist):
     final_track = findTrack(sp, artist_id, name)
     return final_track
 
+
+def addAlbumArt(audiofile, albumart_url):
+    try:
+        imagedata = None
+        try:
+            response = urllib2.urlopen(albumart_url)
+            imagedata = response.read()
+        except:
+            print(albumart_url + " not url")
+            imagedata = open(albumart_url,'rb').read()
+        audiofile.tag.images.set(3,imagedata,"image/jpeg", u"you can put a description here")
+    except:
+        print('Unable to add album art for ' + albumart_url)
+
 def addid3Tag(audiofile, track_data):
+    print track_data
     audiofile.tag.title = track_data[u'name']
     audiofile.tag.artist = track_data[u'artists'][0][u'name']
     audiofile.tag.album = track_data[u'album']
+    addAlbumArt(audiofile, track_data[u'album_img_url'])
     audiofile.tag.save()
 
 
@@ -114,4 +133,14 @@ def add_missing_mp3_data(mp3_filepath):
 
 
 
-add_missing_mp3_data("downloaded_tracks/6ix9ine_KIKA_(feat._Tory_Lanez).mp3")
+add_missing_mp3_data("downloaded_tracks/Wisin_&_Yandel_Callao.mp3")
+
+
+
+
+
+
+
+
+
+
