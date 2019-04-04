@@ -20,13 +20,14 @@ def findArtist(sp, artist):
         print(statement)
     answer = raw_input("Type the number: ")
     type(answer)
-    print("You typed " + answer)
     if answer == 0:
         return 0
     else:
         return artist_items[int(answer)-1][u'id']
 
-def getTrackFromAlbums(sp, albums, final_tracks, name):
+def getTrackFromAlbums(sp, artist_id, index, final_tracks, name):
+    last_response = sp.artist_albums(artist_id, limit=PAGINATION_LIMIT, offset=index)
+    albums = last_response[u'items']
     for alb in albums:
         tracks = sp.album_tracks(alb[u'id'])
         for track in tracks[u'items']:
@@ -35,23 +36,15 @@ def getTrackFromAlbums(sp, albums, final_tracks, name):
                 track[u"album"] = alb[u'name']
                 final_tracks.append(track)
                 break;
-
+    return len(albums)
 
 def findTrack(sp, artist_id, name):
     final_tracks = []
     index = 0
-    last_response = sp.artist_albums(artist_id, limit=PAGINATION_LIMIT, offset=index)
-    albums = last_response[u'items']
-    getTrackFromAlbums(sp, albums, final_tracks, name)
-    while len(last_response[u'items']) > 0:
+    num_albums_returned = getTrackFromAlbums(sp, artist_id, index, final_tracks, name)
+    while num_albums_returned > 0:
         index += PAGINATION_LIMIT
-        last_response = sp.artist_albums(artist_id, limit=PAGINATION_LIMIT, offset=index)
-        albums = last_response[u'items']
-        getTrackFromAlbums(sp, albums, final_tracks, name)
-        print("Finshied offset: " + str(index) + " with " + str(len(albums)) + " albums")
-    print("Number of Albums: " + str(len(albums)))
-    last_response = sp.artist_albums(artist_id, limit=PAGINATION_LIMIT, offset=index)
-    print("Next offset: " + str(len(last_response[u'items'])))
+        num_albums_returned = getTrackFromAlbums(sp, artist_id, index, final_tracks, name)
     
     if len(final_tracks) == 0:
         return ""
@@ -62,6 +55,9 @@ def findTrack(sp, artist_id, name):
     for t in final_tracks:
         index += 1
         print(str(index) + ". " + t[u"album"])
+    answer = raw_input("Type the number: ")
+    type(answer)
+    return final_tracks[int(answer) - 1]
 
 
 
