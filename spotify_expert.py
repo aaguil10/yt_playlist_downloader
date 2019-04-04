@@ -5,11 +5,19 @@ import spotipy.util as util
 PAGINATION_LIMIT = 50
 
 def findArtist(sp, artist):
-    results = sp.search(q=artist, type='artist')
+    index = 0
+    results = sp.search(q=artist, limit=PAGINATION_LIMIT, offset=index, type='artist')
     artist_items = results[u'artists'][u'items']
     for artist_item in artist_items:
         if artist_item[u'name'] == artist:
             return artist_item[u'id']
+    while len(results[u'artists'][u'items']) > 0:
+        index += PAGINATION_LIMIT
+        results = sp.search(q=artist, limit=PAGINATION_LIMIT, offset=index, type='artist')
+        artist_items = artist_items + results[u'artists'][u'items']
+        for artist_item in results[u'artists'][u'items']:
+            if artist_item[u'name'] == artist:
+                return artist_item[u'id'] 
 
     print("Could not find artist. Which is it?")
     print("0. None")
@@ -85,6 +93,7 @@ def add_missing_mp3_data(mp3_filepath):
 
     if token:
         searchFor(token, u'stop', u'jane\'s Addiction')
+        # searchFor(token, u'stop', u'john')
     else:
         print "Can't get token for", username
 
