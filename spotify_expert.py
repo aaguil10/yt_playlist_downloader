@@ -2,6 +2,8 @@ import sys
 import spotipy
 import spotipy.util as util
 
+PAGINATION_LIMIT = 50
+
 def findArtist(sp, artist):
     results = sp.search(q=artist, type='artist')
     artist_items = results[u'artists'][u'items']
@@ -24,18 +26,7 @@ def findArtist(sp, artist):
     else:
         return artist_items[int(answer)-1][u'id']
 
-def findTrack(sp, artist_id, name):
-    final_tracks = []
-    index = 0
-    last_response = sp.artist_albums(artist_id, limit=50, offset=index)
-    albums = last_response[u'items']
-    while len(last_response[u'items']) == 50:
-        index += 50
-        last_response = sp.artist_albums(artist_id, limit=50, offset=index)
-        albums = albums + last_response[u'items']
-        print("Boom")
-    print("Number of Albums: " + str(len(albums)))
-
+def getTrackFromAlbums(sp, albums, final_tracks, name):
     for alb in albums:
         tracks = sp.album_tracks(alb[u'id'])
         for track in tracks[u'items']:
@@ -43,6 +34,25 @@ def findTrack(sp, artist_id, name):
             if n == name:
                 track[u"album"] = alb[u'name']
                 final_tracks.append(track)
+                break;
+
+
+def findTrack(sp, artist_id, name):
+    final_tracks = []
+    index = 0
+    last_response = sp.artist_albums(artist_id, limit=PAGINATION_LIMIT, offset=index)
+    albums = last_response[u'items']
+    getTrackFromAlbums(sp, albums, final_tracks, name)
+    while len(last_response[u'items']) > 0:
+        index += PAGINATION_LIMIT
+        last_response = sp.artist_albums(artist_id, limit=PAGINATION_LIMIT, offset=index)
+        albums = last_response[u'items']
+        getTrackFromAlbums(sp, albums, final_tracks, name)
+        print("Finshied offset: " + str(index) + " with " + str(len(albums)) + " albums")
+    print("Number of Albums: " + str(len(albums)))
+    last_response = sp.artist_albums(artist_id, limit=PAGINATION_LIMIT, offset=index)
+    print("Next offset: " + str(len(last_response[u'items'])))
+    
     if len(final_tracks) == 0:
         return ""
     if len(final_tracks) == 1:
