@@ -1,6 +1,7 @@
 import sys
 import spotipy
 import spotipy.util as util
+import eyed3
 
 PAGINATION_LIMIT = 50
 
@@ -75,10 +76,19 @@ def searchFor(token, name, artist):
     sp = spotipy.Spotify(auth=token)
     artist_id = findArtist(sp, artist)
     final_track = findTrack(sp, artist_id, name)
-    
-    print(final_track)
+    return final_track
+
+def addid3Tag(audiofile, track_data):
+    audiofile.tag.title = track_data[u'name']
+    audiofile.tag.artist = track_data[u'artists'][0][u'name']
+    audiofile.tag.album = track_data[u'album']
+    audiofile.tag.save()
 
 
+def show_info(audiofile):
+    print audiofile.tag.artist
+    print audiofile.tag.album
+    print audiofile.tag.title
 
 
 def add_missing_mp3_data(mp3_filepath):
@@ -88,12 +98,14 @@ def add_missing_mp3_data(mp3_filepath):
     else:
         print "Usage: %s username" % (sys.argv[0],)
         sys.exit()
-
     token = util.prompt_for_user_token(username, scope)
 
     if token:
-        searchFor(token, u'stop', u'jane\'s Addiction')
-        # searchFor(token, u'stop', u'john')
+        # searchFor(token, u'stop', u'jane\'s Addiction')
+        audiofile = eyed3.load(mp3_filepath)
+        track_data = searchFor(token, audiofile.tag.title, audiofile.tag.artist)
+        addid3Tag(audiofile, track_data)
+        show_info(audiofile)
     else:
         print "Can't get token for", username
 
