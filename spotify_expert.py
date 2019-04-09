@@ -7,21 +7,24 @@ import os
 
 PAGINATION_LIMIT = 50
 
-def findArtist(sp, artist):
+def getTrack(sp, artist, name):
     index = 0
     results = sp.search(q=artist, limit=PAGINATION_LIMIT, offset=index, type='artist')
     artist_items = results[u'artists'][u'items']
     for artist_item in artist_items:
-        if artist_item[u'name'] == artist:
-            return artist_item[u'id']
+        artist_id = artist_item[u'id']
+        final_track = findTrack(sp, artist_id, name)
+        if final_track != "":
+            return final_track
     while len(results[u'artists'][u'items']) > 0:
         index += PAGINATION_LIMIT
         results = sp.search(q=artist, limit=PAGINATION_LIMIT, offset=index, type='artist')
         artist_items = artist_items + results[u'artists'][u'items']
         for artist_item in results[u'artists'][u'items']:
-            if artist_item[u'name'] == artist:
-                print(artist_item)
-                return artist_item[u'id'] 
+            artist_id = artist_item[u'id']
+            final_track = findTrack(sp, artist_id, name)
+            if final_track != "":
+                return final_track
 
     print("Could not find artist: \"" + artist + "\". Which is it?")
     print("0. None")
@@ -47,7 +50,7 @@ def getTrackFromAlbums(sp, artist_id, index, final_tracks, name):
         for track in tracks[u'items']:
             n = track[u'name'].upper().lower()
             n = n.split('(')[0].strip()
-            print(name + " == " + n)
+            # print(name + " == " + n)
             if n == name:
                 track[u"album"] = alb[u'name']
                 track[u'release_date'] = alb[u'release_date']
@@ -83,8 +86,8 @@ def searchFor(token, name, artist):
     name = name.upper().lower()
     artist = artist.upper().lower()
     sp = spotipy.Spotify(auth=token)
-    artist_id = findArtist(sp, artist)
-    final_track = findTrack(sp, artist_id, name)
+    final_track = getTrack(sp, artist, name)
+    print(final_track)
     return final_track
 
 
@@ -143,7 +146,7 @@ def add_missing_mp3_data(mp3_filepath):
 
 
 
-add_missing_mp3_data("downloaded_tracks/FISHER_Stop_It_(Original_Mix).mp3")
+# add_missing_mp3_data("downloaded_tracks/FISHER_Stop_It_(Original_Mix).mp3")
 
 
 
