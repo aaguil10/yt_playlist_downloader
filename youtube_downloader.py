@@ -9,6 +9,7 @@ import glob
 
 # from track_gui import Mp3InfoWindow
 from Mp3Data import Mp3Data
+from track_gui import fill_name_artist
 
 # Run this comand to upgrade youtube-dl
 # sudo -H pip install --upgrade youtube-dl
@@ -55,6 +56,13 @@ def findPath(info):
 # https://eyed3.readthedocs.io/en/latest/plugins/display_plugin.html
 def addid3Tag(mp3_data):
     audiofile = eyed3.load(mp3_data.path)
+    print("mp3_data.track: " + mp3_data.track)
+    print("mp3_data.artist: " + mp3_data.artist)
+    if mp3_data.track == "" or mp3_data.track == "":
+        mp3_data.track = mp3_data.path
+        fill_name_artist(mp3_data, "Could not find artist")
+        print("mp3_data.track: " + mp3_data.track)
+        print("mp3_data.artist: " + mp3_data.artist)
     audiofile.tag.title = mp3_data.track
     audiofile.tag.artist = mp3_data.artist
     audiofile.tag.save()
