@@ -11,10 +11,8 @@ def findArtist(sp, artist):
     index = 0
     results = sp.search(q=artist, limit=PAGINATION_LIMIT, offset=index, type='artist')
     artist_items = results[u'artists'][u'items']
-    print("--------artist_item--------")
     for artist_item in artist_items:
         if artist_item[u'name'] == artist:
-            print(artist_item)
             return artist_item[u'id']
     while len(results[u'artists'][u'items']) > 0:
         index += PAGINATION_LIMIT
@@ -43,16 +41,17 @@ def findArtist(sp, artist):
 def getTrackFromAlbums(sp, artist_id, index, final_tracks, name):
     last_response = sp.artist_albums(artist_id, limit=PAGINATION_LIMIT, offset=index)
     albums = last_response[u'items']
+    name = name.split('(')[0].strip()
     for alb in albums:
         tracks = sp.album_tracks(alb[u'id'])
         for track in tracks[u'items']:
             n = track[u'name'].upper().lower()
+            n = n.split('(')[0].strip()
+            print(name + " == " + n)
             if n == name:
                 track[u"album"] = alb[u'name']
                 track[u'release_date'] = alb[u'release_date']
                 track[u"album_img_url"] =  alb[u'images'][0][u'url']
-                print("--------alb--------")
-                print(alb)
                 final_tracks.append(track)
                 break;
     return len(albums)
@@ -103,8 +102,9 @@ def addAlbumArt(audiofile, albumart_url):
         print('Unable to add album art for ' + albumart_url)
 
 def addid3Tag(audiofile, track_data):
-    print("--------track_data--------")
-    print track_data
+    print("--QUESO--")
+    print(track_data)
+    print("--Taco--")
     audiofile.tag.title = track_data[u'name']
     audiofile.tag.artist = track_data[u'artists'][0][u'name']
     audiofile.tag.album = track_data[u'album']
@@ -143,7 +143,7 @@ def add_missing_mp3_data(mp3_filepath):
 
 
 
-add_missing_mp3_data("downloaded_tracks/Minno_Ode_to_Nothing.mp3")
+add_missing_mp3_data("downloaded_tracks/FISHER_Stop_It_(Original_Mix).mp3")
 
 
 
