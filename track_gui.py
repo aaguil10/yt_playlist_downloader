@@ -63,16 +63,22 @@ from Tkinter import *
 #       self.mp3_data.albumart_url = u''
 #       self.root.destroy()
 
-def fetch(entries):
-      for entry in entries:
+def fetch(root, ents, mp3_data):
+      print("Called fetch!")
+      entries = [];
+      for entry in ents:
             field = entry[0]
             text  = entry[1].get()
-            print('%s: "%s"' % (field, text)) 
+            entries.append(text)
+      mp3_data.track = unicode(entries[0], "utf-8")
+      mp3_data.artist = unicode(entries[1], "utf-8")
+      root.quit
+      root.destroy()
       
 
 def makeform(root, fields, popup_msg):
       row = Frame(root)
-      lab = Label(row, width=15, text=popup_msg, anchor='w')
+      lab = Label(row, width=30, text=popup_msg, anchor='w')
       row.pack(side=TOP, fill=X, padx=5, pady=5)
       lab.pack(side=LEFT)
       entries = []
@@ -84,6 +90,14 @@ def makeform(root, fields, popup_msg):
             lab.pack(side=LEFT)
             ent.pack(side=RIGHT, expand=YES, fill=X)
             entries.append((field, ent))
+      row = Frame(root)
+      lab = Label(row, width=15, text="YT title", anchor='w')
+      ent = Entry(row)
+      ent.insert(0,"This is a title!")
+      row.pack(side=TOP, fill=X, padx=5, pady=5)
+      lab.pack(side=LEFT)
+      ent.pack(side=RIGHT, expand=YES, fill=X)
+      entries.append((field, ent))
       return entries
 
 
@@ -92,19 +106,12 @@ def fill_name_artist(mp3_data, popup_msg):
       fields = 'Name', 'Artist'
       ents = makeform(root, fields, popup_msg)
       root.bind('<Return>', (lambda event, e=ents: fetch(e)))   
-      b1 = Button(root, text='Show',
-          command=(lambda e=ents: fetch(e)))
-      b1.pack(side=LEFT, padx=5, pady=5)
-      b2 = Button(root, text='Quit', command=root.quit)
+      # b1 = Button(root, text='Show',
+      #     command=(lambda e=ents: fetch(e)))
+      # b1.pack(side=LEFT, padx=5, pady=5)
+      b2 = Button(root, text='Quit', command=(lambda: fetch(root, ents, mp3_data)))
       b2.pack(side=LEFT, padx=5, pady=5)
       root.mainloop()
-      entries = [];
-      for entry in ents:
-            field = entry[0]
-            text  = entry[1].get()
-            entries.append(text)
-      mp3_data.track = unicode(entries[0], "utf-8")
-      mp3_data.artist = unicode(entries[1], "utf-8")
       return mp3_data
 
 

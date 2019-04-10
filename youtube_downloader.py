@@ -20,9 +20,16 @@ def getNameAndArtist(info, mp3_data):
         arry = mylist[2].split("\xb7")
         mp3_data.setTrack(arry[0].strip())
         mp3_data.setArtist(arry[1].strip())
+        print("mp3_data.track: " + mp3_data.track)
+        print("mp3_data.artist: " + mp3_data.artist)
+        if mp3_data.track == "" or mp3_data.artist == "":
+            fill_name_artist(mp3_data, "Could not find artist")
+            print("mp3_data.track: " + mp3_data.track)
+            print("mp3_data.artist: " + mp3_data.artist)
     except:
         print('An error occured getting the description.')
-        print(info)
+        fill_name_artist(mp3_data, "An error occured getting the description.")
+        # print(info)
 
 
 def downloadVideo(youtube_url):
@@ -56,13 +63,6 @@ def findPath(info):
 # https://eyed3.readthedocs.io/en/latest/plugins/display_plugin.html
 def addid3Tag(mp3_data):
     audiofile = eyed3.load(mp3_data.path)
-    print("mp3_data.track: " + mp3_data.track)
-    print("mp3_data.artist: " + mp3_data.artist)
-    if mp3_data.track == "" or mp3_data.track == "":
-        mp3_data.track = mp3_data.path
-        fill_name_artist(mp3_data, "Could not find artist")
-        print("mp3_data.track: " + mp3_data.track)
-        print("mp3_data.artist: " + mp3_data.artist)
     audiofile.tag.title = mp3_data.track
     audiofile.tag.artist = mp3_data.artist
     audiofile.tag.save()
