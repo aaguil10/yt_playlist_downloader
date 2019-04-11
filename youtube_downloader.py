@@ -23,13 +23,14 @@ def getNameAndArtist(info, mp3_data):
         print("mp3_data.track: " + mp3_data.track)
         print("mp3_data.artist: " + mp3_data.artist)
         if mp3_data.track == "" or mp3_data.artist == "":
-            fill_name_artist(mp3_data, "Could not find artist")
+            fill_name_artist(info, mp3_data, "An error occured. Please add track and artist manually.")
             print("mp3_data.track: " + mp3_data.track)
             print("mp3_data.artist: " + mp3_data.artist)
     except:
-        print('An error occured getting the description.')
-        fill_name_artist(mp3_data, "An error occured getting the description.")
-        # print(info)
+        print('An error occured. Please add track and artist manually.')
+        fill_name_artist(info, mp3_data, "An error occured getting the description.")
+        print("mp3_data.track: " + mp3_data.track)
+        print("mp3_data.artist: " + mp3_data.artist)
 
 
 def downloadVideo(youtube_url):
