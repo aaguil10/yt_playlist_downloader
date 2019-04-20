@@ -13,5 +13,7 @@ downloadPlaylist("https://www.youtube.com/playlist?list=PL80f_f6Nuu4ZLnh8RI45TrX
 
 onlyfiles = [f for f in listdir(mypath) if isfile(join(mypath, f))]
 for file_item in onlyfiles:
+	if "DS_Store" in file_item:
+		continue
 	print(file_item)
 	add_missing_mp3_data(mypath + "/" + file_item)

@@ -9,7 +9,7 @@ import glob
 
 # from track_gui import Mp3InfoWindow
 from Mp3Data import Mp3Data
-from track_gui import fill_name_artist
+from track_gui import buildPopUp
 
 # Run this comand to upgrade youtube-dl
 # sudo -H pip install --upgrade youtube-dl
@@ -23,14 +23,28 @@ def getNameAndArtist(info, mp3_data):
         print("mp3_data.track: " + mp3_data.track)
         print("mp3_data.artist: " + mp3_data.artist)
         if mp3_data.track == "" or mp3_data.artist == "":
-            fill_name_artist(info, mp3_data, "An error occured. Please add track and artist manually.")
-            print("mp3_data.track: " + mp3_data.track)
-            print("mp3_data.artist: " + mp3_data.artist)
+            form_dict =  {
+                "msg": "An error occured. Please add track and artist manually.",
+                "Title": mp3_data.track,
+                "Artist": mp3_data.artist
+            }
+            print("Video Title: " + info['title'])
+            print("Video Description: " + info['description'])
+            buildPopUp(form_dict)
+            mp3_data.track = form_dict["Title"]
+            mp3_data.artist = form_dict["Artist"]
     except:
         print('An error occured. Please add track and artist manually.')
-        fill_name_artist(info, mp3_data, "An error occured getting the description.")
-        print("mp3_data.track: " + mp3_data.track)
-        print("mp3_data.artist: " + mp3_data.artist)
+        form_dict =  {
+            "msg": "An error occured. Please add track and artist manually.",
+            "Title": mp3_data.track,
+            "Artist": mp3_data.artist
+        }
+        print("Video Title: " + info['title'])
+        print("Video Description: " + info['description'])
+        buildPopUp(form_dict)
+        mp3_data.track = form_dict["Title"]
+        mp3_data.artist = form_dict["Artist"]
 
 
 def downloadVideo(youtube_url):

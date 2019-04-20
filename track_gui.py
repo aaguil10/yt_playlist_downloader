@@ -1,22 +1,23 @@
 from Tkinter import *
 
-def fetch(root, ents, mp3_data):
+def fetch(root, ents, form_dict):
       entries = [];
       for entry in ents:
             field = entry[0]
             text  = entry[1].get()
-            entries.append(text)
-      mp3_data.track = unicode(entries[0], "utf-8")
-      mp3_data.artist = unicode(entries[1], "utf-8")
+            # entries.append(text)
+            form_dict[field] = unicode(text, "utf-8")
+            # form_dict[entry[1]] = unicode(entries[1], "utf-8")
       root.destroy()
       
 
-def makeform(root, fields):
+def makeform(root, form_dict):
       entries = []
-      for field in fields:
+      for field in form_dict.keys().reverse():
             row = Frame(root)
             lab = Label(row, width=15, text=field, anchor='w')
             ent = Entry(row)
+            ent.insert(0, form_dict[field])
             row.pack(side=TOP, fill=X, padx=5, pady=5)
             lab.pack(side=LEFT)
             ent.pack(side=RIGHT, expand=YES, fill=X)
@@ -38,34 +39,23 @@ def showLines(root, fields):
 
 
 
-def fill_name_artist(info, mp3_data, popup_msg):
-      print(info[u'description'])
+def buildPopUp(form_dict):
       root = Tk()
 
       row = Frame(root)
-      lab = Label(row, width=30, text=popup_msg, anchor='w')
+      lab = Label(row, width=30, text=form_dict['msg'], anchor='w')
       row.pack(side=TOP, fill=X, padx=5, pady=5)
       lab.pack(side=LEFT)
 
-      fields = 'Name', 'Artist'
-      ents = makeform(root, fields)
+      form_dict.pop("msg")
+      # fields = form_dict.keys()
+      ents = makeform(root, form_dict)
       root.bind('<Return>', (lambda event, e=ents: fetch(e)))
 
-      row = Frame(root)
-      lab = Label(row, width=5, text="YT title", anchor='w')
-      ent = Entry(row)
-      ent.insert(0,info[u'title'])
-      row.pack(side=TOP, fill=X, padx=5, pady=5)
-      lab.pack(side=LEFT)
-      ent.pack(side=RIGHT, expand=YES, fill=X)
-      
-      descr_lines = info[u'description'].splitlines()
-      form_line = showLines(root, descr_lines)
-
-      b2 = Button(root, text='Done', command=(lambda: fetch(root, ents, mp3_data)))
+      b2 = Button(root, text='Done', command=(lambda: fetch(root, ents, form_dict)))
       b2.pack(side=LEFT, padx=5, pady=5)
       root.mainloop()
-      return mp3_data
+      return form_dict
 
 
 
