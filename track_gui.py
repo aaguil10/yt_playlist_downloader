@@ -5,15 +5,14 @@ def fetch(root, ents, form_dict):
       for entry in ents:
             field = entry[0]
             text  = entry[1].get()
-            # entries.append(text)
             form_dict[field] = unicode(text, "utf-8")
-            # form_dict[entry[1]] = unicode(entries[1], "utf-8")
       root.destroy()
       
 
 def makeform(root, form_dict):
       entries = []
-      for field in form_dict.keys().reverse():
+      print(form_dict.keys()[::-1])
+      for field in form_dict.keys()[::-1]:
             row = Frame(root)
             lab = Label(row, width=15, text=field, anchor='w')
             ent = Entry(row)
@@ -48,7 +47,6 @@ def buildPopUp(form_dict):
       lab.pack(side=LEFT)
 
       form_dict.pop("msg")
-      # fields = form_dict.keys()
       ents = makeform(root, form_dict)
       root.bind('<Return>', (lambda event, e=ents: fetch(e)))
 

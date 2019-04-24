@@ -35,13 +35,13 @@ def getNameAndArtist(info, mp3_data):
             mp3_data.artist = form_dict["Artist"]
     except:
         print('An error occured. Please add track and artist manually.')
+        print("Video Title: " + info['title'])
+        print("Video Description: " + info['description'])
         form_dict =  {
             "msg": "An error occured. Please add track and artist manually.",
             "Title": mp3_data.track,
             "Artist": mp3_data.artist
         }
-        print("Video Title: " + info['title'])
-        print("Video Description: " + info['description'])
         buildPopUp(form_dict)
         mp3_data.track = form_dict["Title"]
         mp3_data.artist = form_dict["Artist"]
