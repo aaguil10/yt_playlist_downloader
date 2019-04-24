@@ -90,6 +90,7 @@ def getTrackFromAlbums(sp, artist_id, index, final_tracks, name):
             # print(name + " == " + n)
             if n == name:
                 track[u"album"] = alb[u'name']
+                track[u'artist'] = alb[u'artists'][0][u'name']
                 track[u'release_date'] = alb[u'release_date']
                 track[u"album_img_url"] =  alb[u'images'][0][u'url']
                 final_tracks.append(track)

@@ -11,7 +11,6 @@ def fetch(root, ents, form_dict):
 
 def makeform(root, form_dict):
       entries = []
-      print(form_dict.keys()[::-1])
       for field in form_dict.keys()[::-1]:
             row = Frame(root)
             lab = Label(row, width=15, text=field, anchor='w')
