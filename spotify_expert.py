@@ -47,7 +47,7 @@ def getTrack(sp, artist, name):
         print("Option 1. Try Artist Again")
         print("Option 2. Add Fields Manualy")
         print("Option 3. Enter enter spotify URI")
-        answer = raw_input("Type the number: ")
+        answer = raw_input("Type the number or URI: ")
         type(answer)
         if answer == "1":
             form_dict =  {
@@ -74,8 +74,20 @@ def getTrack(sp, artist, name):
                 "album_img_url" : form_dict["Album Art Link"]
             }
             return track_data
-    
+        else:
+            return getTrackFromUIR(sp, answer);
         
+def getTrackFromUIR(sp, uri):
+    data = sp.track(uri)
+    track_data = {
+        u"name" : data[u'name'],
+        u"artist" : data[u'artists'][0][u'name'],
+        u"album" : data[u'album'][u'name'],
+        u"album_img_url" : data[u'album'][u'images'][0][u'url'],
+        u"release_date" : data[u'album'][u'release_date'],
+    }
+    return track_data
+
 
 
 def getTrackFromAlbums(sp, artist_id, index, final_tracks, name):
